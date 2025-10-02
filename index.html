@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Calculator</title>
+  <title>Dev Muchiri Scientific Calc</title>
   <style>
     * {
       box-sizing: border-box;
@@ -260,6 +260,37 @@
       padding: 12px;
     }
 
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+
+    .history-title {
+      font-size: 0.8rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .clear-history-btn {
+      background: #fc8181;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .clear-history-btn:hover {
+      background: #f56565;
+      transform: scale(1.05);
+    }
+
     .history-item {
       padding: 8px;
       margin-bottom: 6px;
@@ -269,11 +300,19 @@
       color: #4a5568;
       cursor: pointer;
       transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
 
     .history-item:hover {
       background: #edf2f7;
       transform: translateX(4px);
+    }
+
+    .history-content {
+      flex: 1;
     }
 
     .history-item .expr {
@@ -284,6 +323,28 @@
     .history-item .result {
       color: #2d3748;
       font-weight: 600;
+    }
+
+    .delete-item-btn {
+      background: #fed7d7;
+      color: #c53030;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover .delete-item-btn {
+      opacity: 1;
+    }
+
+    .delete-item-btn:hover {
+      background: #fc8181;
+      color: white;
     }
 
     @media (max-width: 480px) {
@@ -636,10 +697,18 @@
       }
       
       historyPanel.classList.add('active');
-      historyPanel.innerHTML = history.map((item, index) => `
-        <div class="history-item" onclick="recallHistory(${index})">
-          <div class="expr">${item.expr}</div>
-          <div class="result">= ${item.result}</div>
+      historyPanel.innerHTML = `
+        <div class="history-header">
+          <span class="history-title">History</span>
+          <button class="clear-history-btn" onclick="clearAllHistory()">Clear All</button>
+        </div>
+      ` + history.map((item, index) => `
+        <div class="history-item">
+          <div class="history-content" onclick="recallHistory(${index})">
+            <div class="expr">${item.expr}</div>
+            <div class="result">= ${item.result}</div>
+          </div>
+          <button class="delete-item-btn" onclick="deleteHistoryItem(${index}, event)">×</button>
         </div>
       `).join('');
     }
@@ -648,6 +717,17 @@
       currentInput = history[index].result.toString();
       shouldResetDisplay = true;
       updateDisplay();
+    }
+
+    function deleteHistoryItem(index, event) {
+      event.stopPropagation();
+      history.splice(index, 1);
+      updateHistory();
+    }
+
+    function clearAllHistory() {
+      history = [];
+      updateHistory();
     }
 
     modeBtn.addEventListener('click', () => {
