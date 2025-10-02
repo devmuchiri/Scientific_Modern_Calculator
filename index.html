@@ -112,6 +112,17 @@
       color: #667eea;
       font-weight: 600;
       min-height: 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .memory-value {
+      background: rgba(102, 126, 234, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
     }
 
     .buttons {
@@ -212,10 +223,15 @@
       background: #fef5e7;
       color: #d69e2e;
       font-size: 0.9rem;
+      font-weight: 700;
     }
 
     button.memory:hover {
       background: #fbd38d;
+    }
+
+    button.memory:active {
+      background: #f6ad55;
     }
 
     .scientific-row {
@@ -421,10 +437,9 @@
     let memory = 0;
     let isScientific = false;
     let history = [];
-    let angleMode = 'deg'; // deg or rad
+    let angleMode = 'deg';
 
     function updateDisplay() {
-      // Format large numbers
       let displayValue = currentInput;
       if (!isNaN(displayValue) && displayValue.length > 12) {
         const num = parseFloat(displayValue);
@@ -437,7 +452,13 @@
       
       display.textContent = displayValue;
       expression.textContent = previousInput + (operation || '');
-      memoryInd.textContent = memory !== 0 ? 'M' : '';
+      
+      if (memory !== 0) {
+        const formattedMemory = Math.abs(memory) > 999999 ? memory.toExponential(2) : memory.toFixed(2);
+        memoryInd.innerHTML = `M <span class="memory-value">${formattedMemory}</span>`;
+      } else {
+        memoryInd.textContent = '';
+      }
     }
 
     function clear() {
@@ -676,7 +697,6 @@
       }
     });
 
-    // Keyboard support
     document.addEventListener('keydown', (e) => {
       if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
       if (e.key === '.') appendNumber('.');
